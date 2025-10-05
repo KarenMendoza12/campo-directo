@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Iniciar Sesión - Campo Directo</title>
+    <meta name="description" content="Inicia sesión en Campo Directo como campesino">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/login.css">
+</head>
+<body class="login-body">
+    <div class="login-container">
+        <!-- Sección izquierda con ilustración (solo visible en desktop) -->
+        <div class="login-illustration">
+            <div class="logo-container">
+                <img src="images/LogoCampoDirecto.png" alt="Campo Directo Logo" class="login-logo">
+            </div>
+            <div class="illustration-content">
+                <img src="images/campesino.png" alt="Campesino ilustración" class="campesino-image">
+            </div>
+        </div>
+        
+        <!-- Sección derecha con formulario -->
+        <div class="login-form-section">
+            <div class="login-form-container">
+                <!-- Logo para móvil -->
+                <div class="mobile-logo">
+                    <img src="images/LogoCampoDirecto.png" alt="Campo Directo Logo" class="login-logo-mobile">
+                </div>
+                
+                <div class="login-header">
+                    <h1>Bienvenido Campesino 🌱</h1>
+                    <p>Accede para gestionar tus productos y ofrecerlos directamente a los compradores.</p>
+                </div>
+                
+                <form id="loginForm" class="login-form" novalidate>
+                    <div class="form-group">
+                        <input 
+                            type="text" 
+                            id="username" 
+                            name="username" 
+                            placeholder="Usuario / correo" 
+                            required
+                        >
+                        <span class="error-message" id="username-error"></span>
+                    </div>
+                    
+                    <div class="form-group">
+                        <input 
+                            type="password" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Contraseña" 
+                            required
+                        >
+                        <span class="error-message" id="password-error"></span>
+                    </div>
+                    
+                    <div class="form-options">
+                        <label class="remember-checkbox">
+                            <input type="checkbox" id="remember" name="remember">
+                            <span class="checkmark"></span>
+                            Recordar mi sesión
+                        </label>
+                        
+                        <a href="#" class="forgot-password">¿Olvidaste tu contraseña?</a>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">
+                        🌱 Ingresar al Campo
+                    </button>
+                    
+                    <div class="login-footer">
+                        <p>¿No tienes una cuenta? <a href="registro.html" class="register-link">Regístrate aquí</a></p>
+                        <p><a href="index.html" class="back-home">← Volver al inicio</a></p>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <script src="js/login.js"></script>
+</body>
+</html>

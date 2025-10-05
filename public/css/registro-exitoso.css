@@ -1,0 +1,468 @@
+/* Estilos para la página de registro exitoso */
+
+.success-main {
+    min-height: calc(100vh - 80px);
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+}
+
+.success-container {
+    max-width: 1000px;
+    width: 100%;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    overflow: hidden;
+    padding: 2rem;
+}
+
+/* Layout para desktop - horizontal */
+.desktop-layout {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
+    align-items: center;
+    min-height: 500px;
+}
+
+.mobile-layout {
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    text-align: center;
+    padding: 2rem 1rem;
+}
+
+.success-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #2d5016 0%, #4a7c24 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    min-height: 400px;
+}
+
+.success-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2rem;
+    text-align: center;
+    padding: 1rem;
+}
+
+/* Logo principal y texto */
+.success-logo {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.main-logo {
+    height: 80px;
+    width: auto;
+}
+
+.brand-text {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #2d5016;
+    line-height: 0.9;
+    margin: 0;
+}
+
+.brand-directo {
+    color: #ffa500;
+}
+
+/* Texto para móvil */
+.brand-text-mobile {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #2d5016;
+    margin: 0;
+    text-align: center;
+}
+
+/* Ilustración principal */
+.success-illustration {
+    margin: 1rem 0;
+}
+
+.success-image {
+    max-width: 100%;
+    height: auto;
+    max-height: 300px;
+    border-radius: 15px;
+}
+
+/* Mensaje de éxito */
+.success-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    margin: 1.5rem 0;
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    background-color: #2d5016;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: checkAnimation 0.6s ease-in-out;
+}
+
+.check-icon {
+    width: 40px;
+    height: 40px;
+    fill: white;
+}
+
+.success-message h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #2d5016;
+    margin: 0;
+}
+
+/* Botón principal */
+.success-actions {
+    margin-top: 2rem;
+}
+
+.btn-main-menu {
+    background-color: #2d5016;
+    color: white;
+    padding: 1rem 2.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(45, 80, 22, 0.2);
+}
+
+.btn-main-menu:hover {
+    background-color: #1a3009;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(45, 80, 22, 0.3);
+}
+
+.btn-main-menu:active {
+    transform: translateY(0);
+}
+
+/* Animación para el icono de check */
+@keyframes checkAnimation {
+    0% {
+        transform: scale(0);
+        opacity: 0;
+    }
+    50% {
+        transform: scale(1.2);
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+/* Animación de entrada para todo el contenido */
+.success-content {
+    animation: fadeInUp 0.8s ease-out;
+}
+
+@keyframes fadeInUp {
+    0% {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+
+/* Large screens (PC/Desktop) - 992px and up */
+@media (min-width: 992px) {
+    .desktop-layout {
+        display: grid;
+    }
+    
+    .mobile-layout {
+        display: none;
+    }
+    
+    .success-container {
+        max-width: 1100px;
+        padding: 3rem;
+    }
+    
+    .desktop-layout {
+        gap: 4rem;
+        min-height: 550px;
+    }
+    
+    .success-left {
+        min-height: 450px;
+        padding: 3rem;
+    }
+    
+    .main-logo {
+        height: 100px;
+    }
+    
+    .brand-text {
+        font-size: 3rem;
+    }
+    
+    .success-image {
+        max-height: 400px;
+    }
+    
+    .success-icon {
+        width: 100px;
+        height: 100px;
+    }
+    
+    .check-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .success-message h2 {
+        font-size: 2.5rem;
+    }
+    
+    .btn-main-menu {
+        padding: 1.2rem 3rem;
+        font-size: 1.2rem;
+    }
+}
+
+/* Medium screens (Tablet) - 768px to 991px */
+@media (min-width: 768px) and (max-width: 991px) {
+    .desktop-layout {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2rem;
+        text-align: center;
+    }
+    
+    .mobile-layout {
+        display: none;
+    }
+    
+    .success-container {
+        max-width: 700px;
+        padding: 2rem;
+    }
+    
+    .success-left {
+        min-height: 250px;
+        padding: 2rem;
+    }
+    
+    .success-logo {
+        gap: 0.8rem;
+    }
+    
+    .main-logo {
+        height: 70px;
+    }
+    
+    .brand-text {
+        font-size: 2.2rem;
+    }
+    
+    .success-image {
+        max-height: 280px;
+    }
+    
+    .success-icon {
+        width: 70px;
+        height: 70px;
+    }
+    
+    .check-icon {
+        width: 35px;
+        height: 35px;
+    }
+    
+    .success-message h2 {
+        font-size: 1.8rem;
+    }
+    
+    .btn-main-menu {
+        padding: 1rem 2rem;
+        font-size: 1rem;
+    }
+}
+
+/* Small screens (Mobile) - 576px to 767px */
+@media (min-width: 576px) and (max-width: 767px) {
+    .desktop-layout {
+        display: none;
+    }
+    
+    .mobile-layout {
+        display: flex;
+    }
+    
+    .success-main {
+        padding: 1rem 0.5rem;
+    }
+    
+    .success-container {
+        max-width: 500px;
+        padding: 2rem 1.5rem;
+        border-radius: 15px;
+    }
+    
+    .main-logo {
+        height: 80px;
+    }
+    
+    .brand-text-mobile {
+        font-size: 1.8rem;
+    }
+    
+    .success-icon {
+        width: 60px;
+        height: 60px;
+    }
+    
+    .check-icon {
+        width: 30px;
+        height: 30px;
+    }
+    
+    .success-message h2 {
+        font-size: 1.6rem;
+    }
+    
+    .btn-main-menu {
+        padding: 1rem 1.5rem;
+        font-size: 1rem;
+        width: 100%;
+        max-width: 300px;
+    }
+}
+
+/* Extra Small screens (Small Mobile) - up to 575px */
+@media (max-width: 575px) {
+    .desktop-layout {
+        display: none;
+    }
+    
+    .mobile-layout {
+        display: flex;
+    }
+    
+    .success-main {
+        padding: 0.5rem;
+        min-height: calc(100vh - 60px);
+    }
+    
+    .success-container {
+        border-radius: 10px;
+        padding: 1.5rem 1rem;
+        max-width: 100%;
+    }
+    
+    .main-logo {
+        height: 70px;
+    }
+    
+    .brand-text-mobile {
+        font-size: 1.5rem;
+    }
+    
+    .success-message {
+        gap: 0.8rem;
+        margin: 1rem 0;
+    }
+    
+    .success-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .check-icon {
+        width: 25px;
+        height: 25px;
+    }
+    
+    .success-message h2 {
+        font-size: 1.4rem;
+    }
+    
+    .success-actions {
+        margin-top: 1.5rem;
+    }
+    
+    .btn-main-menu {
+        padding: 0.9rem 1.2rem;
+        font-size: 0.95rem;
+        width: 100%;
+    }
+}
+
+/* Landscape orientation for mobile */
+@media (max-width: 767px) and (orientation: landscape) {
+    .desktop-layout {
+        display: none;
+    }
+    
+    .mobile-layout {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        gap: 2rem;
+        text-align: left;
+    }
+    
+    .success-main {
+        padding: 0.5rem;
+    }
+    
+    .success-container {
+        padding: 1.5rem;
+        max-width: 700px;
+    }
+    
+    .main-logo {
+        height: 40px;
+    }
+    
+    .brand-text-mobile {
+        font-size: 1.3rem;
+    }
+    
+    .success-icon {
+        width: 50px;
+        height: 50px;
+    }
+    
+    .success-message h2 {
+        font-size: 1.3rem;
+    }
+    
+    .btn-main-menu {
+        padding: 0.7rem 1.5rem;
+        font-size: 0.9rem;
+    }
+}

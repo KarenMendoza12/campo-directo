@@ -1,0 +1,24 @@
+{
+  "name": "campo-directo",
+  "version": "1.0.0",
+  "description": "Web platform connecting agricultural producers directly with consumers",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "echo 'Development server will be configured'",
+    "build": "echo 'Build process will be configured'",
+    "test": "echo 'Tests will be configured'",
+    "start": "echo 'Production start will be configured'"
+  },
+  "keywords": [
+    "agriculture",
+    "marketplace",
+    "direct-trade",
+    "web-platform",
+    "farmers",
+    "consumers"
+  ],
+  "author": "Campo Directo Team",
+  "license": "ISC",
+  "devDependencies": {},
+  "dependencies": {}
+}
