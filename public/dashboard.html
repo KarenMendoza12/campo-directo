@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - Campo Directo</title>
+    <meta name="description" content="Panel de control para campesinos - Campo Directo">
+    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/dashboard.css">
+</head>
+<body class="dashboard-body">
+    <!-- Header con navegación del dashboard -->
+    <header class="dashboard-header">
+        <nav class="dashboard-nav">
+            <div class="nav-left">
+                <img src="images/LogoCampoDirecto.png" alt="Campo Directo Logo" class="dashboard-logo">
+                <h1 class="dashboard-title">Panel del Campesino</h1>
+            </div>
+            <div class="nav-right">
+                <div class="user-info">
+                    <span class="user-greeting">¡Hola, <span id="userName">Campesino</span>!</span>
+                    <div class="user-menu">
+                        <button class="user-menu-btn" id="userMenuBtn">
+                            <span class="user-avatar">🌱</span>
+                        </button>
+                        <div class="user-dropdown" id="userDropdown">
+                            <a href="#" id="profileLink">Mi Perfil</a>
+                            <a href="#" id="settingsLink">Configuración</a>
+                            <hr>
+                            <a href="#" id="logoutBtn">Cerrar Sesión</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Contenido principal del dashboard -->
+    <main class="dashboard-main">
+        <!-- Sidebar de navegación -->
+        <aside class="dashboard-sidebar">
+            <nav class="sidebar-nav">
+                <ul class="nav-items">
+                    <li>
+                        <a href="#overview" class="nav-item active" data-section="overview">
+                            <span class="nav-icon">📊</span>
+                            Resumen
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#products" class="nav-item" data-section="products">
+                            <span class="nav-icon">🌾</span>
+                            Mis Productos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#orders" class="nav-item" data-section="orders">
+                            <span class="nav-icon">📦</span>
+                            Pedidos
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#farm" class="nav-item" data-section="farm">
+                            <span class="nav-icon">🏡</span>
+                            Mi Finca
+                        </a>
+                    </li>
+                    <li>
+                        <a href="#sales" class="nav-item" data-section="sales">
+                            <span class="nav-icon">💰</span>
+                            Ventas
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Contenido de las secciones -->
+        <div class="dashboard-content">
+            <!-- Sección Resumen -->
+            <section id="overview" class="content-section active">
+                <div class="section-header">
+                    <h2>Resumen de tu Actividad</h2>
+                    <p>Vista general de tu finca y ventas</p>
+                </div>
+
+                <!-- Tarjetas de estadísticas -->
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-icon">🌾</div>
+                        <div class="stat-content">
+                            <h3>Productos Activos</h3>
+                            <div class="stat-number" id="activeProducts">12</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">📦</div>
+                        <div class="stat-content">
+                            <h3>Pedidos Pendientes</h3>
+                            <div class="stat-number" id="pendingOrders">3</div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">💰</div>
+                        <div class="stat-content">
+                            <h3>Ventas del Mes</h3>
+                            <div class="stat-number">$<span id="monthSales">1,250,000</span></div>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-card">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-content">
+                            <h3>Calificación</h3>
+                            <div class="stat-number" id="rating">4.8</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Actividad reciente -->
+                <div class="recent-activity">
+                    <h3>Actividad Reciente</h3>
+                    <div class="activity-list">
+                        <div class="activity-item">
+                            <span class="activity-icon">✅</span>
+                            <div class="activity-content">
+                                <p><strong>Pedido completado</strong> - Tomates orgánicos (5kg)</p>
+                                <small>Hace 2 horas</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-icon">🆕</span>
+                            <div class="activity-content">
+                                <p><strong>Nuevo producto agregado</strong> - Lechugas hidropónicas</p>
+                                <small>Hace 5 horas</small>
+                            </div>
+                        </div>
+                        <div class="activity-item">
+                            <span class="activity-icon">💬</span>
+                            <div class="activity-content">
+                                <p><strong>Mensaje de comprador</strong> - Consulta sobre disponibilidad</p>
+                                <small>Ayer</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección Productos -->
+            <section id="products" class="content-section">
+                <div class="section-header">
+                    <h2>Mis Productos</h2>
+                    <button class="btn btn-primary" id="addProductBtn">
+                        <span>+</span> Agregar Producto
+                    </button>
+                </div>
+
+                <!-- Filtros de productos -->
+                <div class="filters">
+                    <select class="filter-select" id="categoryFilter">
+                        <option value="">Todas las categorías</option>
+                        <option value="vegetales">Vegetales</option>
+                        <option value="frutas">Frutas</option>
+                        <option value="granos">Granos</option>
+                        <option value="hierbas">Hierbas</option>
+                    </select>
+                    <select class="filter-select" id="statusFilter">
+                        <option value="">Todos los estados</option>
+                        <option value="disponible">Disponible</option>
+                        <option value="agotado">Agotado</option>
+                        <option value="temporada">Fuera de temporada</option>
+                    </select>
+                </div>
+
+                <!-- Lista de productos -->
+                <div class="products-grid" id="productsGrid">
+                    <!-- Los productos se generarán dinámicamente con JavaScript -->
+                </div>
+            </section>
+
+            <!-- Sección Pedidos -->
+            <section id="orders" class="content-section">
+                <div class="section-header">
+                    <h2>Pedidos</h2>
+                    <div class="order-tabs">
+                        <button class="tab-btn active" data-tab="pending">Pendientes (3)</button>
+                        <button class="tab-btn" data-tab="completed">Completados</button>
+                        <button class="tab-btn" data-tab="cancelled">Cancelados</button>
+                    </div>
+                </div>
+
+                <div class="orders-list" id="ordersList">
+                    <!-- Los pedidos se generarán dinámicamente -->
+                </div>
+            </section>
+
+            <!-- Sección Mi Finca -->
+            <section id="farm" class="content-section">
+                <div class="section-header">
+                    <h2>Mi Finca</h2>
+                    <button class="btn btn-secondary" id="editFarmBtn">Editar Información</button>
+                </div>
+
+                <div class="farm-info">
+                    <div class="farm-card">
+                        <h3>Información General</h3>
+                        <div class="info-row">
+                            <label>Nombre de la Finca:</label>
+                            <span id="farmName">Finca San José</span>
+                        </div>
+                        <div class="info-row">
+                            <label>Ubicación:</label>
+                            <span id="farmLocation">Cundinamarca, Colombia</span>
+                        </div>
+                        <div class="info-row">
+                            <label>Área:</label>
+                            <span id="farmArea">5 hectáreas</span>
+                        </div>
+                        <div class="info-row">
+                            <label>Tipo de Cultivo:</label>
+                            <span id="farmType">Orgánico</span>
+                        </div>
+                    </div>
+
+                    <div class="farm-card">
+                        <h3>Certificaciones</h3>
+                        <div class="certifications">
+                            <div class="cert-badge">🌱 Orgánico</div>
+                            <div class="cert-badge">✅ BPA</div>
+                            <div class="cert-badge">🌿 Sostenible</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Sección Ventas -->
+            <section id="sales" class="content-section">
+                <div class="section-header">
+                    <h2>Ventas y Estadísticas</h2>
+                    <select class="period-select" id="salesPeriod">
+                        <option value="week">Esta semana</option>
+                        <option value="month" selected>Este mes</option>
+                        <option value="year">Este año</option>
+                    </select>
+                </div>
+
+                <div class="sales-summary">
+                    <div class="summary-card">
+                        <h3>Ingresos Totales</h3>
+                        <div class="summary-amount">$1,250,000</div>
+                        <div class="summary-change positive">+15% vs mes anterior</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Productos Vendidos</h3>
+                        <div class="summary-amount">45 unidades</div>
+                        <div class="summary-change positive">+8% vs mes anterior</div>
+                    </div>
+                    <div class="summary-card">
+                        <h3>Clientes Únicos</h3>
+                        <div class="summary-amount">12</div>
+                        <div class="summary-change positive">+3 nuevos</div>
+                    </div>
+                </div>
+
+                <!-- Gráfico placeholder -->
+                <div class="chart-container">
+                    <h3>Ventas por Día</h3>
+                    <div class="chart-placeholder">
+                        <p>📊 Gráfico de ventas diarias</p>
+                        <small>Funcionalidad de gráficos disponible próximamente</small>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Modal para agregar producto -->
+    <div id="addProductModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Agregar Nuevo Producto</h3>
+                <button class="modal-close" id="closeModal">&times;</button>
+            </div>
+            <form id="addProductForm" class="modal-form">
+                <div class="form-group">
+                    <label for="productName">Nombre del Producto</label>
+                    <input type="text" id="productName" name="productName" required>
+                </div>
+                <div class="form-group">
+                    <label for="productCategory">Categoría</label>
+                    <select id="productCategory" name="productCategory" required>
+                        <option value="">Seleccionar categoría</option>
+                        <option value="vegetales">Vegetales</option>
+                        <option value="frutas">Frutas</option>
+                        <option value="granos">Granos</option>
+                        <option value="hierbas">Hierbas</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="productPrice">Precio por kg/unidad</label>
+                    <input type="number" id="productPrice" name="productPrice" min="0" step="100" required>
+                </div>
+                <div class="form-group">
+                    <label for="productStock">Cantidad disponible</label>
+                    <input type="number" id="productStock" name="productStock" min="0" required>
+                </div>
+                <div class="form-group">
+                    <label for="productDescription">Descripción</label>
+                    <textarea id="productDescription" name="productDescription" rows="3"></textarea>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancelProduct">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Agregar Producto</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="js/dashboard.js"></script>
+</body>
+</html>

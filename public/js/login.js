@@ -115,10 +115,11 @@ document.addEventListener('DOMContentLoaded', function() {
         const remember = rememberCheckbox.checked;
         
         // Show loading state
-        const loginBtn = document.querySelector('.login-btn');
+        const loginBtn = document.querySelector('.login-button');
         const originalText = loginBtn.textContent;
-        loginBtn.textContent = '🌱 Ingresando...';
+        loginBtn.innerHTML = '<span class="button-icon">🌱</span> Ingresando...';
         loginBtn.disabled = true;
+        loginBtn.classList.add('loading');
         
         // Simulate login process (replace with actual API call)
         setTimeout(() => {
@@ -173,13 +174,16 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     function showLoginSuccess() {
-        const loginBtn = document.querySelector('.login-btn');
-        loginBtn.textContent = '✅ ¡Bienvenido al Campo!';
-        loginBtn.style.backgroundColor = '#28a745';
+        const loginBtn = document.querySelector('.login-button');
+        loginBtn.innerHTML = '<span class="button-icon">✅</span> ¡Bienvenido al Campo!';
+        loginBtn.style.background = 'linear-gradient(135deg, #28a745 0%, #1e7e34 100%)';
+        loginBtn.classList.remove('loading');
         
         // Show success animation
-        const formContainer = document.querySelector('.login-form-container');
-        formContainer.classList.add('login-success');
+        const formContainer = document.querySelector('.login-right-section');
+        if (formContainer) {
+            formContainer.classList.add('login-success');
+        }
     }
     
     function loadRememberedUser() {
@@ -232,8 +236,13 @@ document.head.insertAdjacentHTML('beforeend', `
     }
 }
 
-.login-btn:disabled {
+.login-button:disabled {
     cursor: not-allowed;
+    opacity: 0.8;
+}
+
+.login-button.loading {
+    pointer-events: none;
     opacity: 0.8;
 }
 </style>
