@@ -8,25 +8,20 @@ const mysql = require('mysql2/promise');
 const poolConfig = {
     host: process.env.DB_HOST || 'localhost',
     user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || '',
-    database: process.env.DB_NAME || 'campo_directo',
+    password: process.env.DB_PASSWORD || 'KeMc2003*/',
+    database: process.env.DB_NAME || 'datos_prueba_completos',
     port: process.env.DB_PORT || 3306,
     
     // Configuración del pool
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    acquireTimeout: 60000,
-    timeout: 60000,
     
     // Configuración de charset
     charset: 'utf8mb4',
     
     // Configuración de timezone
     timezone: '+00:00',
-    
-    // Reconnect automático
-    reconnect: true,
     
     // Configuración adicional
     multipleStatements: false,

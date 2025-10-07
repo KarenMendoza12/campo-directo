@@ -91,6 +91,7 @@ class User {
                 u.fecha_registro,
                 u.calificacion_promedio,
                 u.total_calificaciones,
+                f.id as finca_id,
                 f.nombre_finca,
                 f.ubicacion_departamento,
                 f.ubicacion_municipio,

@@ -3,7 +3,7 @@ const path = require('path');
 const fs = require('fs').promises;
 const router = express.Router();
 
-const { authenticateToken } = require('../middleware/auth');
+const { authenticateToken } = require('../src/middleware/auth');
 const { uploadMiddleware, handleUploadError, cleanupOnError, getFileUrl, deleteFile } = require('../middleware/upload');
 const { logHelpers } = require('../config/logger');
 

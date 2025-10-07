@@ -52,7 +52,7 @@
                     </div>
                     
                     <div class="form-group">
-                        <input type="tel" id="contacto" name="contacto" placeholder="Contacto" required>
+<input type="tel" id="contacto" name="contacto" placeholder="Teléfono (10 dígitos)" required>
                     </div>
                     
                     <div class="form-group">
@@ -79,6 +79,16 @@
                     <!-- Campo específico para campesinos -->
                     <div class="form-group campesino-field">
                         <input type="text" id="nombreFinca" name="nombreFinca" placeholder="Nombre de Finca">
+                    </div>
+
+                    <!-- Contraseña -->
+                    <div class="form-group">
+                        <input type="password" id="password" name="password" placeholder="Contraseña" required minlength="6">
+                    </div>
+
+                    <!-- Confirmar contraseña -->
+                    <div class="form-group">
+                        <input type="password" id="passwordConfirm" name="passwordConfirm" placeholder="Confirmar contraseña" required minlength="6">
                     </div>
                     
                     <button type="submit" class="btn-register">Registrarse</button>

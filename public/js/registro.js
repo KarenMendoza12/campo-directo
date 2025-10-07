@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', function() {
     toggleFincaField();
 
     // Validación y envío del formulario
-    form.addEventListener('submit', function(e) {
+    form.addEventListener('submit', async function(e) {
         e.preventDefault();
         
         // Obtener los datos del formulario
@@ -39,7 +39,9 @@ document.addEventListener('DOMContentLoaded', function() {
             correo: formData.get('correo'),
             tipoUsuario: formData.get('tipoUsuario'),
             fechaNacimiento: formData.get('fechaNacimiento'),
-            nombreFinca: formData.get('nombreFinca') || null
+            nombreFinca: formData.get('nombreFinca') || null,
+            password: formData.get('password'),
+            passwordConfirm: formData.get('passwordConfirm')
         };
 
         // Validaciones adicionales
@@ -47,14 +49,38 @@ document.addEventListener('DOMContentLoaded', function() {
             return;
         }
 
-        // Simular envío del formulario
+        // Envío real a la API
         showLoading();
-        
-        // Simular tiempo de procesamiento
-        setTimeout(() => {
+        try {
+            const payload = {
+                nombre: data.nombre,
+                apellido: data.apellido,
+                email: data.correo.trim(),
+                telefono: (data.contacto || '').replace(/\s+/g, ''),
+                tipo_usuario: data.tipoUsuario,
+                fecha_nacimiento: toISODate(data.fechaNacimiento),
+                password: data.password,
+                ...(data.nombreFinca ? { nombreFinca: data.nombreFinca } : {})
+            };
+
+            const res = await fetch('/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+
+            const json = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                throw new Error(json?.message || 'Error de registro');
+            }
+
             hideLoading();
-            showSuccessMessage(data);
-        }, 2000);
+            // Después de registrarse, redirigir al login
+            window.location.href = 'login.html';
+        } catch (err) {
+            hideLoading();
+            alert('Error: ' + err.message);
+        }
     });
 
     // Función de validación
@@ -63,41 +89,41 @@ document.addEventListener('DOMContentLoaded', function() {
         const errors = [];
 
         // Validar nombre y apellido
-        if (data.nombre.length < 2) {
+        if (!data.nombre || data.nombre.length < 2) {
             errors.push('El nombre debe tener al menos 2 caracteres');
             isValid = false;
         }
 
-        if (data.apellido.length < 2) {
+        if (!data.apellido || data.apellido.length < 2) {
             errors.push('El apellido debe tener al menos 2 caracteres');
             isValid = false;
         }
 
         // Validar correo
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(data.correo)) {
+        if (!emailRegex.test(data.correo || '')) {
             errors.push('Por favor ingresa un correo electrónico válido');
             isValid = false;
         }
 
-        // Validar contacto (número de teléfono)
-        const phoneRegex = /^[\d\-\+\(\)\s]+$/;
-        if (!phoneRegex.test(data.contacto) || data.contacto.length < 7) {
-            errors.push('Por favor ingresa un número de contacto válido');
+        // Validar contacto (número de teléfono Colombia: 10 dígitos)
+        const digits = (data.contacto || '').replace(/\D/g, '');
+        if (!/^\d{10}$/.test(digits)) {
+            errors.push('Por favor ingresa un número de contacto válido de 10 dígitos (ej: 3101234567)');
             isValid = false;
         }
 
         // Validar fecha de nacimiento (mayor de 18 años)
         const birthDate = new Date(data.fechaNacimiento);
         const today = new Date();
-        const age = today.getFullYear() - birthDate.getFullYear();
+        let age = today.getFullYear() - birthDate.getFullYear();
         const monthDiff = today.getMonth() - birthDate.getMonth();
         
         if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birthDate.getDate())) {
             age--;
         }
         
-        if (age < 18) {
+        if (isNaN(age) || age < 18) {
             errors.push('Debes ser mayor de 18 años para registrarte');
             isValid = false;
         }
@@ -108,11 +134,39 @@ document.addEventListener('DOMContentLoaded', function() {
             isValid = false;
         }
 
+        // Validar contraseña
+        const pwRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{6,}$/;
+        if (!pwRegex.test(data.password || '')) {
+            errors.push('La contraseña debe tener al menos 6 caracteres e incluir minúscula, mayúscula y número');
+            isValid = false;
+        }
+        if ((data.password || '') !== (data.passwordConfirm || '')) {
+            errors.push('Las contraseñas no coinciden');
+            isValid = false;
+        }
+
         if (!isValid) {
             showErrors(errors);
         }
 
         return isValid;
+    }
+
+    // Convierte una fecha a formato YYYY-MM-DD
+    function toISODate(value) {
+        if (!value) return value;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+        const m = value.match(/^(\d{2})\/(\d{2})\/(\d{4})$/);
+        if (m) return `${m[3]}-${m[2]}-${m[1]}`;
+        try {
+            const d = new Date(value);
+            if (!isNaN(d.getTime())) {
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                return `${d.getFullYear()}-${mm}-${dd}`;
+            }
+        } catch (_) {}
+        return value;
     }
 
     // Mostrar errores de validación

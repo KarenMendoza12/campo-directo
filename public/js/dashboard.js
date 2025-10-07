@@ -1,35 +1,63 @@
 // Dashboard JavaScript - Campo Directo
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Verificación de autenticación
-    if (!checkAuthentication()) {
+document.addEventListener('DOMContentLoaded', async function() {
+    // Verificación rápida: si no hay token, ir a login inmediatamente
+    const tokenQuick = localStorage.getItem('authToken');
+    if (!tokenQuick) {
+        window.location.href = 'login.html';
         return;
     }
-    
-    // Inicialización del dashboard
+    // Verificación de autenticación real con token
+    const authed = await ensureAuthWithAPI();
+    if (!authed) {
+        return;
+    }
+
+    // Inicialización base
     initializeDashboard();
     initializeRecentActivities();
     setupNavigation();
     setupUserMenu();
     setupModal();
     setupTabs();
-    loadUserData();
-    loadProducts();
-    loadOrders();
     setupEventListeners();
-    
-    // Actualizar actividades recientes cada 30 segundos
+
+    // Cargar datos reales desde la API
+    await loadRealUser();
+    await Promise.all([
+        loadCategories(),
+        loadRealStats(),
+        loadRealProducts(),
+        loadRealOrders(),
+        loadRealActivities()
+    ]).catch(console.error);
+
+    // Actualizaciones periódicas
     setInterval(updateRecentActivitiesTime, 30000);
-    
-    // Actualizar estadísticas iniciales
-    updateStats();
-    updateRecentActivities();
-    
+
     // Aplicar estados visuales a productos
     applyProductStates();
 });
 
-// Datos simulados para el dashboard
+// Cargar actividades reales
+async function loadRealActivities() {
+    try {
+        const res = await api.get('/dashboard/activities');
+        const activities = res.data?.activities || res.data?.data?.activities || [];
+        dashboardData.recentActivities = activities.map(a => ({
+            id: a.id,
+            description: a.descripcion,
+            type: a.tipo,
+            timestamp: a.fecha_actividad
+        }));
+        updateRecentActivities();
+    } catch (e) {
+        handleAuthError(e);
+        updateRecentActivities();
+    }
+}
+
+// Datos (se rellenarán con API). Mantengo estructura como fallback
 let dashboardData = {
     user: {
         name: 'Juan Pérez',
@@ -239,7 +267,29 @@ function setupTabs() {
     });
 }
 
-function loadUserData() {
+async function loadRealUser() {
+    try {
+        const res = await authApi.getMe();
+        const u = res.data.user;
+        dashboardData.user.name = `${u.nombre} ${u.apellido}`;
+        if (u.finca) {
+            dashboardData.user.farmName = u.finca.nombre || dashboardData.user.farmName;
+            dashboardData.user.location = `${u.finca.departamento || 'Por definir'}, ${u.finca.municipio || ''}`.trim();
+            dashboardData.user.area = u.finca.area ? `${u.finca.area} hectáreas` : dashboardData.user.area;
+            dashboardData.user.type = (u.finca.tipo_cultivo || 'Orgánico');
+            dashboardData.user.fincaId = u.finca.id || null;
+        }
+        // Calificación desde el usuario
+        if (!dashboardData.stats) dashboardData.stats = {};
+        dashboardData.stats.rating = u.calificacion_promedio || 0;
+        updateUserGreeting();
+        loadUserStaticInfo();
+    } catch (e) {
+        handleAuthError(e);
+    }
+}
+
+function loadUserStaticInfo() {
     // Actualizar nombre de usuario en el header
     const userNameElement = document.getElementById('userName');
     if (userNameElement) {
@@ -260,11 +310,49 @@ function updateUserGreeting() {
     }
 }
 
+async function loadRealStats() {
+    try {
+        const res = await api.get('/dashboard/stats');
+        const s = res.data.stats || res.data?.data?.stats || res.data; // por compatibilidad
+        if (!dashboardData.stats) dashboardData.stats = {};
+        dashboardData.stats.activeProducts = s.productos_activos || 0;
+        dashboardData.stats.pendingOrders = s.pedidos_pendientes || 0;
+        dashboardData.stats.monthSales = Number(s.ventas_mes_actual || 0);
+        updateStats();
+    } catch (e) {
+        handleAuthError(e);
+    }
+}
+
 function updateStats() {
     document.getElementById('activeProducts').textContent = dashboardData.stats.activeProducts;
     document.getElementById('pendingOrders').textContent = dashboardData.stats.pendingOrders;
     document.getElementById('monthSales').textContent = dashboardData.stats.monthSales.toLocaleString();
     document.getElementById('rating').textContent = dashboardData.stats.rating;
+}
+
+async function loadRealProducts() {
+    try {
+        // Obtener usuario para su id
+        const me = await authApi.getMe();
+        const userId = me.data.user.id;
+        const result = await productApi.getProducts({ usuario_id: userId, limit: 12 });
+        const products = (result.data?.products) || (result.data?.data?.products) || result.data?.data?.result?.products || result.data?.data || [];
+        // Mapear a estructura de UI
+        dashboardData.products = (products || []).map(p => ({
+            id: p.id,
+            name: p.nombre,
+            category: p.categoria || '—',
+            price: Number(p.precio_por_kg || 0),
+            stock: Number(p.stock_disponible || 0),
+            status: p.estado || 'disponible',
+            description: p.descripcion || ''
+        }));
+        loadProducts();
+    } catch (e) {
+        handleAuthError(e);
+        loadProducts(); // mostrar lo que haya (posible vacío)
+    }
 }
 
 function loadProducts() {
@@ -307,6 +395,28 @@ function createProductCard(product) {
         </div>
     `;
     return card;
+}
+
+async function loadRealOrders() {
+    try {
+        const res = await api.get('/orders?estado=pending&limit=10');
+        const orders = res.data?.orders || res.data?.data?.orders || res.data?.data?.result?.orders || res.data?.data || [];
+        const me = await authApi.getMe();
+        const isFarmer = me.data.user.tipo_usuario === 'campesino';
+        dashboardData.orders = (orders || []).map(o => ({
+            id: o.id,
+            customer: isFarmer ? (o.nombre_comprador || 'Cliente') : (o.nombre_campesino || 'Campesino'),
+            items: `${o.cantidad_total || 0} productos`,
+            total: Number(o.total || 0),
+            status: o.estado,
+            date: o.fecha_pedido,
+            phone: isFarmer ? (o.telefono_comprador || '') : (o.telefono_campesino || '')
+        }));
+        loadOrders();
+    } catch (e) {
+        handleAuthError(e);
+        loadOrders();
+    }
 }
 
 function loadOrders() {
@@ -424,34 +534,34 @@ function filterProducts() {
 function handleAddProduct() {
     const formData = new FormData(document.getElementById('addProductForm'));
     
-    const newProduct = {
-        id: Date.now(), // ID simple para demo
-        name: formData.get('productName'),
-        category: formData.get('productCategory'),
-        price: parseInt(formData.get('productPrice')),
-        stock: parseInt(formData.get('productStock')),
-        status: parseInt(formData.get('productStock')) > 0 ? 'disponible' : 'agotado',
-        description: formData.get('productDescription') || 'Sin descripción'
-    };
+    const name = formData.get('productName').trim();
+    const categoryId = parseInt(formData.get('productCategory')); // ahora contiene id real
+    const price = parseInt(formData.get('productPrice'));
+    const stock = parseInt(formData.get('productStock'));
+    const description = formData.get('productDescription') || '';
 
-    // Agregar producto a los datos
-    dashboardData.products.push(newProduct);
-    
-    // Actualizar estadísticas
-    dashboardData.stats.activeProducts = dashboardData.products.filter(p => p.status === 'disponible').length;
-    updateStats();
-    
-    // Recargar productos si estamos en esa sección
-    const productsSection = document.getElementById('products');
-    if (productsSection && productsSection.classList.contains('active')) {
-        loadProducts();
+    try {
+        const fincaId = dashboardData.user.fincaId;
+        if (!fincaId) throw new Error('No se encontró la finca del usuario');
+        const payload = {
+            nombre: name,
+            descripcion: description,
+            categoria_id: categoryId,
+            finca_id: fincaId,
+            precio_por_kg: price,
+            stock_disponible: stock,
+            unidad_medida: 'kg'
+        };
+        await productApi.createProduct(payload);
+        // Refrescar datos reales
+        await Promise.all([loadRealProducts(), loadRealStats()]);
+        // Cerrar modal
+        document.getElementById('addProductModal').classList.remove('show');
+        showNotification('Producto agregado exitosamente', 'success');
+    } catch (e) {
+        handleAuthError(e);
+        showNotification('No se pudo crear el producto', 'error');
     }
-
-    // Cerrar modal
-    document.getElementById('addProductModal').classList.remove('show');
-
-    // Mostrar mensaje de éxito
-    showNotification('Producto agregado exitosamente', 'success');
 }
 
 function resetForm() {
@@ -716,12 +826,11 @@ function getContactIcon(type) {
 
 function handleLogout() {
     if (confirm('¿Estás seguro de que quieres cerrar sesión?')) {
-        // Limpiar datos de sesión
+        // Limpiar token y sesión
+        localStorage.removeItem('authToken');
         sessionStorage.removeItem('loginData');
         sessionStorage.removeItem('registroUsuario');
-        
-        // Redireccionar al login o inicio
-        window.location.href = 'index.html';
+        window.location.href = 'login.html';
     }
 }
 
@@ -899,7 +1008,125 @@ function showNotification(message, type = 'info') {
     }, 3000);
 }
 
+function handleAuthError(e) {
+    if (e && (e.status === 401 || e.status === 403)) {
+        showNotification('Tu sesión expiró. Inicia sesión nuevamente.', 'warning');
+        setTimeout(() => forceLogout(), 600);
+    } else {
+        console.error(e);
+    }
+}
+
+function forceLogout() {
+    try {
+        localStorage.removeItem('authToken');
+        sessionStorage.removeItem('loginData');
+        sessionStorage.removeItem('registroUsuario');
+    } catch (_) {}
+    window.location.replace('login.html');
+}
+
+async function loadCategories() {
+    try {
+        const res = await api.get('/products/categories');
+        const opts = res.data?.data?.categories || res.data?.categories || [];
+        const select = document.getElementById('productCategory');
+        if (select) {
+            select.innerHTML = '<option value="">Seleccionar categoría</option>' +
+                opts.map(c => `<option value="${c.id}">${c.nombre}</option>`).join('');
+        }
+    } catch (e) { console.warn('No se pudieron cargar categorías', e); }
+}
+
 // Verificar autenticación al cargar la página
+async function ensureAuthWithAPI() {
+    const gate = document.getElementById('authGate');
+    const app = document.getElementById('appContainer');
+
+    // 1) Solo verificamos que exista token (la expiración la decide el backend)
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+        window.location.replace('login.html');
+        return false;
+    }
+
+    // 2) Validación directa con fetch para evitar cualquier problema de cliente
+    try {
+        const res = await fetch('/api/auth/me', {
+            headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) {
+            throw new Error('AUTH_FAIL_' + res.status);
+        }
+        console.log('[Dashboard] auth ok');
+        // Asegurar que el cliente API interno también tenga el token para siguientes llamadas
+        try { if (typeof api !== 'undefined' && typeof api.setAuthToken === 'function') api.setAuthToken(token); } catch(err) { console.warn('[Dashboard] setAuthToken warn', err); }
+        // Mostrar app (forzar visibilidad)
+        try {
+            if (gate) { gate.style.display = 'none'; gate.setAttribute('aria-hidden', 'true'); }
+            if (app) {
+                app.style.display = 'block';
+                // Si el estilo inline aún oculta, remover atributo style
+                const cs = window.getComputedStyle(app);
+                if (cs && cs.display === 'none') {
+                    app.removeAttribute('style');
+                }
+            }
+        } catch (toggleErr) {
+            console.error('[Dashboard] toggle err', toggleErr);
+        }
+        // Como respaldo, intentar mostrar después de un pequeño delay
+        setTimeout(() => {
+            const appEl = document.getElementById('appContainer');
+            if (appEl && window.getComputedStyle(appEl).display === 'none') {
+                appEl.style.display = 'block';
+                appEl.removeAttribute('style');
+            }
+            const gateEl = document.getElementById('authGate');
+            if (gateEl) gateEl.style.display = 'none';
+        }, 100);
+        setupInactivityTimeout();
+        return true;
+    } catch (e) {
+        showNotification('Sesión inválida. Por favor inicia sesión.', 'warning');
+        setTimeout(() => forceLogout(), 600);
+        return false;
+    }
+}
+
+function parseJwt(token) {
+    try {
+        const base = token.split('.')[1];
+        const base64 = base.replace(/-/g, '+').replace(/_/g, '/');
+        // JWT payload es ASCII: parse directo
+        const json = atob(base64);
+        return JSON.parse(json);
+    } catch (e) { return null; }
+}
+
+function isTokenExpired(token) {
+    const payload = parseJwt(token);
+    if (!payload || !payload.exp) return true;
+    const nowSec = Math.floor(Date.now() / 1000);
+    return payload.exp <= nowSec;
+}
+
+function setupInactivityTimeout() {
+    const LIMIT_MS = 30 * 60 * 1000; // 30 minutos
+    let timer;
+    const reset = () => {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            showNotification('Sesión cerrada por inactividad', 'warning');
+            setTimeout(() => handleLogout(), 800);
+        }, LIMIT_MS);
+    };
+    ['click','keydown','mousemove','scroll','touchstart'].forEach(evt => {
+        window.addEventListener(evt, reset, { passive: true });
+    });
+    reset();
+}
+
 function checkAuthentication() {
     const loginData = sessionStorage.getItem('loginData');
     if (!loginData) {
@@ -990,7 +1217,7 @@ function createOrderCard(order) {
 }
 
 // Función mejorada para agregar productos con validación
-function handleAddProduct() {
+async function handleAddProduct() {
     const formData = new FormData(document.getElementById('addProductForm'));
     
     // Validación adicional

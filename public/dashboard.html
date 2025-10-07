@@ -7,8 +7,24 @@
     <meta name="description" content="Panel de control para campesinos - Campo Directo">
     <link rel="stylesheet" href="css/styles.css">
     <link rel="stylesheet" href="css/dashboard.css">
+    <script>
+      // Redirección temprana solo si NO hay token
+      (function(){
+        try {
+          if (!localStorage.getItem('authToken')) {
+            location.replace('login.html');
+          }
+        } catch (e) {
+          location.replace('login.html');
+        }
+      })();
+    </script>
 </head>
 <body class="dashboard-body">
+    <div id="authGate" style="display:flex;align-items:center;justify-content:center;height:100vh;font-family:inherit;color:#2d5016;">
+        Verificando sesión...
+    </div>
+    <div id="appContainer" style="display:none;">
     <!-- Header con navegación del dashboard -->
     <header class="dashboard-header">
         <nav class="dashboard-nav">
@@ -318,6 +334,8 @@
         </div>
     </div>
 
+    </div>
+    <script src="js/config/api.js"></script>
     <script src="js/dashboard.js"></script>
 </body>
 </html>

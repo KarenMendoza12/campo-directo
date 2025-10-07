@@ -22,7 +22,7 @@ const antiIntermediaryRoutes = require('./src/routes/anti-intermediarios');
 const uploadRoutes = require('./routes/uploads');
 
 // Importar middlewares
-const errorHandler = require('./src/middleware/errorHandler');
+const { errorHandler } = require('./src/middleware/errorHandler');
 const { authenticateToken } = require('./src/middleware/auth');
 const { requestLoggerMiddleware } = require('./config/logger');
 

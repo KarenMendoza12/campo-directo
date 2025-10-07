@@ -25,15 +25,22 @@ async function setupDatabase() {
     
     // 1. Crear base de datos
     console.log('🗄️ Creando base de datos campo_directo...');
-    await connection.execute('CREATE DATABASE IF NOT EXISTS campo_directo');
-    await connection.execute('USE campo_directo');
+    await connection.query('CREATE DATABASE IF NOT EXISTS campo_directo');
+    await connection.query('USE campo_directo');
     console.log('✅ Base de datos creada/seleccionada\n');
     
     // 2. Ejecutar esquema
     console.log('📋 Ejecutando esquema de base de datos...');
     const schemaPath = path.join(__dirname, '..', 'database', 'campo_directo_schema.sql');
-    const schema = fs.readFileSync(schemaPath, 'utf8');
-    await connection.execute(schema);
+    const schemaRaw = fs.readFileSync(schemaPath, 'utf8');
+    // Quitar comandos de CREATE DATABASE/USE del esquema para evitar errores si ya existe
+    const schema = schemaRaw
+      .replace(/^[ \t]*CREATE\s+DATABASE[\s\S]*?;\s*/im, '')
+      .replace(/^[ \t]*USE\s+campo_directo\s*;\s*/im, '')
+      .replace(/^[ \t]*DELIMITER\s+\/\/\s*/gim, '')
+      .replace(/^[ \t]*DELIMITER\s*;\s*/gim, '')
+      .replace(/END\s*\/\/\s*/g, 'END;');
+    await connection.query(schema);
     console.log('✅ Esquema ejecutado\n');
     
     // 3. Insertar datos de prueba con contraseñas hasheadas

@@ -109,6 +109,7 @@ const formatUserResponse = (user) => {
         calificacion_promedio: user.calificacion_promedio,
         ...(user.nombre_finca && {
             finca: {
+                id: user.finca_id || null,
                 nombre: user.nombre_finca,
                 departamento: user.ubicacion_departamento,
                 municipio: user.ubicacion_municipio,
